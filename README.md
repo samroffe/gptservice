@@ -9,7 +9,7 @@ The GPT Service is designed to leverage the power of OpenAI's GPT model for vari
 ## Features
 
 - **Text Generation**: Generate human-like text based on given prompts.
-- **Deploy Public cloud AWS**: 
+- **Deploy Public cloud AWS services**(Supported services: ec2)
 
 ## Getting Started
 
