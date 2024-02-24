@@ -23,7 +23,7 @@ class ec2(Service):
                     },
                     "operation": {
                         "type": "string",
-                        "description": "The operation to perform on the AWS service"
+                        "description": "Build or Terminate a service"
                     },
                     "region": {
                         "type": "string",
