@@ -44,6 +44,7 @@ def invoke_aws(service_name, region_name, server_name, operation):
                 "ec2": manage_ec2,
                 "amazonec2": manage_ec2,
                 "s3": manage_s3,
+                "Amazon EC2": manage_ec2
             }
             if service_name in service_function:
                 session = boto3.resource(
@@ -52,7 +53,7 @@ def invoke_aws(service_name, region_name, server_name, operation):
                     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
                     region_name=region_name
                 )
-                service_function[service_name](server_name, operation, region_name, session) 
+                service_function[service_name](server_name, session, operation) 
            
             else:
                 print('Service not available')
@@ -62,7 +63,7 @@ def invoke_aws(service_name, region_name, server_name, operation):
         print('Error running AWS api request')
         print(e)
 
-def manage_ec2(server_name, operation, region_name, ec2):
+def manage_ec2(server_name, ec2, operation=None):
     api_result = {}
     #action = "create_instances" if any(word.lower() in operation.lower() for word in ["build","create","deploy","make","construct","generate","produce","design"]) else "terminate_instances"
     api_result = ec2.create_instances(
@@ -87,7 +88,7 @@ def manage_ec2(server_name, operation, region_name, ec2):
     print(api_result)
     # return api_result
 
-def manage_s3(server_name, operation, s3):
+def manage_s3(server_name, s3, operation=None):
     pass
 
 
