@@ -53,7 +53,7 @@ def invoke_aws(service_name, region_name, server_name, operation):
                     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
                     region_name=region_name
                 )
-                service_function[service_name](server_name, session, operation) 
+                service_function[service_name](server_name, session, region_name, operation) 
            
             else:
                 print('Service not available')
@@ -63,7 +63,7 @@ def invoke_aws(service_name, region_name, server_name, operation):
         print('Error running AWS api request')
         print(e)
 
-def manage_ec2(server_name, ec2, operation=None):
+def manage_ec2(server_name, ec2, region_name, operation=None):
     api_result = {}
     #action = "create_instances" if any(word.lower() in operation.lower() for word in ["build","create","deploy","make","construct","generate","produce","design"]) else "terminate_instances"
     api_result = ec2.create_instances(
@@ -88,8 +88,17 @@ def manage_ec2(server_name, ec2, operation=None):
     print(api_result)
     # return api_result
 
-def manage_s3(server_name, s3, operation=None):
-    pass
+def manage_s3(server_name, s3, region_name, operation=None):
+    api_result = {}
+    api_result = s3.create_bucket(Bucket=server_name,
+                                  ACL='private',
+                                  CreateBucketConfiguration={
+                                      'LocationConstraint': region_name
+                                  })
+    api_result.wait_until_exists()
+    api_result.load()
+
+    print(api_result)  
 
 
 
