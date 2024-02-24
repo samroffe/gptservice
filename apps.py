@@ -2,7 +2,7 @@ import json
 import os
 import boto3
 from openai import OpenAI
-from Tools.services import SERVICES
+from Tools.services import SERVICES # This is a dictionary of services and their tools but its not used in this code
 
 AWS_SECRET_ACCESS_KEY=os.environ.get('aws_secret_key')
 AWS_ACCESS_KEY_ID=os.environ.get('aws_access_key')
