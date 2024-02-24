@@ -42,7 +42,7 @@ def invoke_aws(service_name, region_name, server_name, operation):
             print('------- Request for External AWS API ----------')
             service_function = {
                 "ec2": manage_ec2,
-                "amazoneec2": manage_ec2,
+                "amazonec2": manage_ec2,
                 "s3": manage_s3,
             }
             if service_name in service_function:
@@ -64,7 +64,7 @@ def invoke_aws(service_name, region_name, server_name, operation):
 
 def manage_ec2(server_name, operation, region_name, ec2):
     api_result = {}
-    action = "create_instances" if any(word in operation.lower() for word in ["runInstances", "TerminateInstances"]) else "terminate_instances"
+    #action = "create_instances" if any(word.lower() in operation.lower() for word in ["build","create","deploy","make","construct","generate","produce","design"]) else "terminate_instances"
     api_result = ec2.create_instances(
             ImageId="ami-0e670eb768a5fc3d4",
             InstanceType="t2.micro",
@@ -73,8 +73,8 @@ def manage_ec2(server_name, operation, region_name, ec2):
             MaxCount=1
         )[0]
     api_result.wait_until_running()
-    if action == "create_instances":
-        api_result.create_tags(
+    # if action == "create_instances":
+    api_result.create_tags(
                 Tags=[
                     {
                         'Key': 'Name',
