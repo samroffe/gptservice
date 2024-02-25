@@ -16,17 +16,24 @@ def call_assistant(tools, userPrompt):
     chat_response = client.chat.completions.create(
         model=GPT_MODEL,
         messages=[{"role": "user", "content": userPrompt}],
-        tools=tools,
-        tool_choice="auto"
+        functions=tools,
+        function_call='auto'
     )
     try:
-        assistant_message = json.loads(chat_response.choices[0].message.tool_calls[0].function.arguments)
+        assistant_message = json.loads(chat_response.choices[0].message.function_call.arguments)
         print(assistant_message)
-        service_name = assistant_message['service_name'].lower()
-        operation = assistant_message['operation']
-        region_name = assistant_message['region']
-        server_name = assistant_message['name']
-        invoke_aws(service_name, region_name, server_name, operation)
+        if 'region' in assistant_message:
+                service_name = assistant_message['service_name'].lower()
+                operation = assistant_message['operation']
+                region = assistant_message['region']
+                name = assistant_message['name']
+                
+        if 'item' in assistant_message:
+                item = assistant_message['item']
+                amount = assistant_message['amount']
+                brand = assistant_message['brand']
+                price = assistant_message['price']    
+        invoke_aws(service_name, region, name, operation)
         # assistant_input = invoke_aws(service_name, region_name, server_name, operation)
         # return assistant_input
 
@@ -100,7 +107,9 @@ def manage_s3(server_name, s3, region_name, operation=None):
 
     print(api_result)  
 
-
+def extractShoppingDetail(item, amount, brand, price):
+    print(f'Item: {item}, Amount: {amount}, Brand: {brand}, Price: {price}')
+    return f'Item: {item}, Amount: {amount}, Brand: {brand}, Price: {price}'
 
 
 # def natural_language_processing(results):
@@ -114,7 +123,8 @@ def manage_s3(server_name, s3, region_name, operation=None):
 
 def main():
     tools = [
-    SERVICES['ec2'].tools
+    SERVICES['shopping'].tools, SERVICES['ec2'].tools
+        
 ]
     while True:
         userPrompt = input("Enter your prompt ('q' to quit): ")

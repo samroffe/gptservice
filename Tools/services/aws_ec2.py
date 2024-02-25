@@ -9,9 +9,7 @@ class ec2(Service):
     
     @property
     def tools(self):
-        return {
-        "type": "function",
-        "function": {
+        return  {
             "name": "invoke_aws_service",
             "description": "Invoke an AWS service",
             "parameters": {
@@ -34,8 +32,8 @@ class ec2(Service):
                         "type": "string",
                         "description": "The name of the instance"
                     }
-                },
-                "required": ["service_name", "operation", "region", "name"]
-            }
+                }
+            },
+            "required": ["service_name", "operation", "region", "name"]
+            
         }
-    }
