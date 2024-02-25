@@ -3,6 +3,7 @@ import os
 import boto3
 from openai import OpenAI
 from Tools.services import SERVICES
+from Tools.features.aws_services import AWS
 
 AWS_SECRET_ACCESS_KEY=os.environ.get('aws_secret_key')
 AWS_ACCESS_KEY_ID=os.environ.get('aws_access_key')
@@ -21,9 +22,10 @@ def call_assistant(tools, userPrompt):
     )
     try:
         service_name, operation, region, name = extract_payload(chat_response)
-        item,amount,brand,price = extract_payload(chat_response)   
-        invoke_aws(service_name, region, name, operation)
-        extractShoppingDetail(item, brand, price, amount)
+        aws=AWS(service_name, region, name, operation)
+        aws.invoke_service()
+        # item,amount,brand,price = extract_payload(chat_response)
+        # extractShoppingDetail(item, brand, price, amount)
         # assistant_input = invoke_aws(service_name, region_name, server_name, operation)
         # return assistant_input
 
@@ -49,73 +51,72 @@ def extract_payload(chat_response):
             return item, brand, amount, price   
 
 
-def invoke_aws(service_name, region_name, server_name, operation):   
-    try:
-        if service_name and region_name is not None:
-            print('------- Request for External AWS API ----------')
-            service_function = {
-                "ec2": manage_ec2,
-                "amazonec2": manage_ec2,
-                "s3": manage_s3,
-                "Amazon EC2": manage_ec2
-            }
-            if service_name in service_function:
-                session = boto3.resource(
-                    service_name,
-                    aws_access_key_id=AWS_ACCESS_KEY_ID,
-                    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                    region_name=region_name
-                )
-                service_function[service_name](server_name, session, region_name, operation) 
+# def invoke_aws(service_name, region_name, server_name, operation):   
+#     try:
+#         if service_name and region_name is not None:
+#             print('------- Request for External AWS API ----------')
+#             service_function = {
+#                 "ec2": manage_ec2,
+#                 "amazonec2": manage_ec2,
+#                 "s3": manage_s3,
+#                 "Amazon EC2": manage_ec2
+#             }
+#             if service_name in service_function:
+#                 session = boto3.resource(
+#                     service_name,
+#                     aws_access_key_id=AWS_ACCESS_KEY_ID,
+#                     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+#                     region_name=region_name
+#                 )
+#                 service_function[service_name](server_name, session, region_name, operation) 
            
-            else:
-                print('Service not available')
-                return
+#             else:
+#                 print('Service not available')
+#                 return
     
-    except Exception as e:
-        print('Error running AWS api request')
-        print(e)
+#     except Exception as e:
+#         print('Error running AWS api request')
+#         print(e)
 
-def manage_ec2(server_name, ec2, region_name, operation=None):
-    api_result = {}
-    #action = "create_instances" if any(word.lower() in operation.lower() for word in ["build","create","deploy","make","construct","generate","produce","design"]) else "terminate_instances"
-    api_result = ec2.create_instances(
-            ImageId="ami-0e670eb768a5fc3d4",
-            InstanceType="t2.micro",
-            KeyName="apikey", 
-            MinCount=1,
-            MaxCount=1
-        )[0]
-    api_result.wait_until_running()
-    # if action == "create_instances":
-    api_result.create_tags(
-                Tags=[
-                    {
-                        'Key': 'Name',
-                        'Value': server_name
-                        },
-        # Add any additional tags here if needed
-    ]
-)
-    api_result.load()
-    print(api_result)
-    # return api_result
+# def manage_ec2(server_name, ec2, region_name, operation=None):
+#     api_result = {}
+#     #action = "create_instances" if any(word.lower() in operation.lower() for word in ["build","create","deploy","make","construct","generate","produce","design"]) else "terminate_instances"
+#     api_result = ec2.create_instances(
+#             ImageId="ami-0e670eb768a5fc3d4",
+#             InstanceType="t2.micro",
+#             KeyName="apikey", 
+#             MinCount=1,
+#             MaxCount=1
+#         )[0]
+#     api_result.wait_until_running()
+#     # if action == "create_instances":
+#     api_result.create_tags(
+#                 Tags=[
+#                     {
+#                         'Key': 'Name',
+#                         'Value': server_name
+#                         },
+#         # Add any additional tags here if needed
+#     ]
+# )
+#     api_result.load()
+#     print(api_result)
+#     # return api_result
 
-def manage_s3(server_name, s3, region_name, operation=None):
-    api_result = {}
-    api_result = s3.create_bucket(Bucket=server_name,
-                                  ACL='private',
-                                  CreateBucketConfiguration={
-                                      'LocationConstraint': region_name
-                                  })
-    api_result.wait_until_exists()
-    api_result.load()
+# def manage_s3(server_name, s3, region_name, operation=None):
+#     api_result = {}
+#     api_result = s3.create_bucket(Bucket=server_name,
+#                                   ACL='private',
+#                                   CreateBucketConfiguration={
+#                                       'LocationConstraint': region_name
+#                                   })
+#     api_result.wait_until_exists()
+#     api_result.load()
 
-    print(api_result)  
+#     print(api_result)  
 
 def extractShoppingDetail(item, brand, price, amount=1):
     print(f'Item: {item}, Amount: {amount}, Brand: {brand}, Price: {price}')
-    return f'Item: {item}, Amount: {amount}, Brand: {brand}, Price: {price}'
 
 
 # def natural_language_processing(results):
