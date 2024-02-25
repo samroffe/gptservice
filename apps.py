@@ -20,27 +20,33 @@ def call_assistant(tools, userPrompt):
         function_call='auto'
     )
     try:
-        assistant_message = json.loads(chat_response.choices[0].message.function_call.arguments)
-        print(assistant_message)
-        if 'region' in assistant_message:
-                service_name = assistant_message['service_name'].lower()
-                operation = assistant_message['operation']
-                region = assistant_message['region']
-                name = assistant_message['name']
-                
-        if 'item' in assistant_message:
-                item = assistant_message['item']
-                amount = assistant_message['amount']
-                brand = assistant_message['brand']
-                price = assistant_message['price']    
+        service_name, operation, region, name = extract_payload(chat_response)
+        item,amount,brand,price = extract_payload(chat_response)   
         invoke_aws(service_name, region, name, operation)
+        extractShoppingDetail(item, brand, price, amount)
         # assistant_input = invoke_aws(service_name, region_name, server_name, operation)
         # return assistant_input
-
 
     except Exception as e:
         assistant_message = chat_response.choices[0].message.content
         print(assistant_message)
+
+def extract_payload(chat_response):
+    assistant_message = json.loads(chat_response.choices[0].message.function_call.arguments)
+    print(assistant_message)
+    if 'region' in assistant_message:
+            service_name = assistant_message['service_name'].lower()
+            operation = assistant_message['operation']
+            region = assistant_message['region']
+            name = assistant_message['name']
+            return service_name, operation, region, name
+                
+    if 'item' in assistant_message:
+            item = assistant_message['item']
+            amount = assistant_message['amount']
+            brand = assistant_message['brand']
+            price = assistant_message['price']
+            return item, brand, amount, price   
 
 
 def invoke_aws(service_name, region_name, server_name, operation):   
@@ -107,7 +113,7 @@ def manage_s3(server_name, s3, region_name, operation=None):
 
     print(api_result)  
 
-def extractShoppingDetail(item, amount, brand, price):
+def extractShoppingDetail(item, brand, price, amount=1):
     print(f'Item: {item}, Amount: {amount}, Brand: {brand}, Price: {price}')
     return f'Item: {item}, Amount: {amount}, Brand: {brand}, Price: {price}'
 
