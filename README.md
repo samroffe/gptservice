@@ -18,3 +18,5 @@ To use the GPT Service, follow these steps:
 1. **Installation**: Install the required dependencies by running `pip install -r requirements.txt`.
 2. **Authentication**: Obtain API keys, secret key and configure them in your environment or application.
 3. **Usage**: `python apps.py`
+
+

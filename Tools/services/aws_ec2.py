@@ -34,6 +34,6 @@ class ec2(Service):
                     }
                 }
             },
-            "required": ["service_name", "operation", "region", "name"]
+            "required": ["service_name", "operation", "region"]
             
         }
