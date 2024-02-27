@@ -18,7 +18,7 @@ class AWS:
     def invoke_service(self):   
         try:
             if self.service_name and self.region_name is not None:
-                print('------- Request for External AWS API ----------')
+                print('Request for External AWS API.......')
                 service_function = {
                     "ec2": 'manage_ec2',
                     "amazonec2": 'manage_ec2',
@@ -36,8 +36,8 @@ class AWS:
                                 aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
                                 region_name=self.region_name
                         )
-                            getattr(self, service_function[self.service_name])(self.server_name, session, self.region_name, self.operation)
-                            break
+                            service_exec=getattr(self, service_function[self.service_name])(self.server_name, session, self.region_name, self.operation)
+                            return service_exec
 
             else:
                 print('Service variables are not set. Please check the service name and region name.')
@@ -77,7 +77,7 @@ class AWS:
                 "State": instance.state['Name'],
                 "Public IP": instance.public_ip_address,
             }
-            print(instance_details)
+            return instance_details
 
             # return api_result
         except ClientError as e:
