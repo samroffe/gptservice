@@ -78,7 +78,7 @@ def natural_language_processing(results):
 
 def main():
     tools = [
-    SERVICES['shopping'].tools, SERVICES['ec2'].tools
+    SERVICES['shopping'].tools, SERVICES['aws'].tools
         
 ]
     while True:

@@ -1,17 +1,49 @@
-service_name = "amazon s3"
-service_function = {
-    "ec2": 'manage_ec2',
-    "amazonec2": 'manage_ec2',
-    "s3": 'manage_s3',
-    "amazon ec2": 'manage_ec2'
-}
+import boto3 
+import os
 
-service_found = False
-for service, function_name in service_function.items():
-    if any(keyword.lower() in service_name.lower() for keyword in service.split()):
-        service_found = True
-        print("Function to manage {} service: {}".format(service, function_name))
-        break
+AWS_SECRET_ACCESS_KEY=os.environ.get('aws_secret_key')
+AWS_ACCESS_KEY_ID=os.environ.get('aws_access_key')
 
-if not service_found:
-    print("Service not supported.")
+ec2 = boto3.client('ec2', region_name='us-east-1', aws_access_key_id=AWS_ACCESS_KEY_ID,
+                                aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+response = ec2.describe_images(
+    Filters=[
+        {
+            'Name': 'architecture',
+            'Values': ['x86_64']  # Optionally, filter by architecture
+        },
+        {
+            'Name': 'state',
+            'Values': ['available']  # Optionally, filter by state
+        },
+        {
+            'Name': 'owner-alias',
+            'Values': ['amazon']  # Optionally, filter by owner alias
+        },
+        {
+            'Name': 'root-device-type',
+            'Values': ['ebs']  # Optionally, filter by root device type
+        },
+        {
+            'Name': 'virtualization-type',
+            'Values': ['hvm']  # Filter by HVM virtualization type
+        },
+        {
+            'Name': 'name',
+            'Values': ['al2023-ami-2023.3.*']  # Filter by name containing "al2023"
+        }
+    ]
+)
+
+# Sort images by creation date
+sorted_images = sorted(response['Images'], key=lambda x: x['CreationDate'], reverse=True)
+
+# Get the most recent image
+most_recent_image = sorted_images[0]['ImageId'] if sorted_images else None
+
+print(most_recent_image)
+# # Print the details of the most recent image
+# if most_recent_image:
+#     print(f"Most Recent Image: ID - {most_recent_image['ImageId']}, Name - {most_recent_image['Name']}, Creation Date - {most_recent_image['CreationDate']}")
+# else:
+#     print("No available images found.")

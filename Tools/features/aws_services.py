@@ -47,12 +47,52 @@ class AWS:
             print('Error running AWS api request')
             print(e)
 
+    def list_recent_ami(self, region_name):
+        ec2 = boto3.client('ec2', region_name=region_name, aws_access_key_id=AWS_ACCESS_KEY_ID,
+                                aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+        response = ec2.describe_images(
+            Filters=[
+                {
+                    'Name': 'architecture',
+                    'Values': ['x86_64']  # Optionally, filter by architecture
+                },
+                {
+                    'Name': 'state',
+                    'Values': ['available']  # Optionally, filter by state
+                },
+                {
+                    'Name': 'owner-alias',
+                    'Values': ['amazon']  # Optionally, filter by owner alias
+                },
+                {
+                    'Name': 'root-device-type',
+                    'Values': ['ebs']  # Optionally, filter by root device type
+                },
+                {
+                    'Name': 'virtualization-type',
+                    'Values': ['hvm']  # Filter by HVM virtualization type
+                },
+                {
+                    'Name': 'name',
+                    'Values': ['al2023-ami-2023.3.*']  # Filter by name containing "al2023"
+                }
+            ]
+        )
+        # Sort images by creation date
+        sorted_images = sorted(response['Images'], key=lambda x: x['CreationDate'], reverse=True)
+
+        # Get the most recent image
+        most_recent_image = sorted_images[0]['ImageId'] if sorted_images else None
+
+        return most_recent_image
+
     def manage_ec2(self, server_name, ec2, region_name, operation=None):
         api_result = {}
         #action = "create_instances" if any(word.lower() in operation.lower() for word in ["build","create","deploy","make","construct","generate","produce","design"]) else "terminate_instances"
         try:
+            ami_id = self.list_recent_ami(region_name)
             api_result = ec2.create_instances(
-                ImageId="ami-0e670eb768a5fc3d4",
+                ImageId=ami_id,
                 InstanceType="t2.micro",
                 KeyName="apikey", 
                 MinCount=1,

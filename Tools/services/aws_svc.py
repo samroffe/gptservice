@@ -1,11 +1,11 @@
 from Tools.services.features import Service
 
 
-class ec2(Service):
+class aws(Service):
 
     @property
     def service(self):
-        return "ec2"
+        return "aws"
     
     @property
     def tools(self):

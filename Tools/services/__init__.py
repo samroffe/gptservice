@@ -1,8 +1,8 @@
-from Tools.services.aws_ec2 import ec2
+from Tools.services.aws_svc import aws
 from Tools.services.shopping import shopping
 
 SERVICES = {
-    ec2().service: ec2(),
+    aws().service: aws(),
     shopping().service: shopping()
 
 }
