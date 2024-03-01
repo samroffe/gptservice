@@ -26,15 +26,8 @@ def call_assistant(tools, userPrompt):
             assistant_message = chat_response.choices[0].message.content
             return assistant_message
         else:
-            service_name, operation, region, name = extract_payload(assistant_message)
-            if not service_name or not region:
-                assistant_message = natural_language_processing(userPrompt)
-                return assistant_message                
-            else:
-                aws=AWS(service_name, region, name, operation)
-                results=aws.invoke_service()
-                assistant_response=natural_language_processing(results)
-                return assistant_response
+             message = process_service(assistant_message, userPrompt)
+             return message
             # item,amount,brand,price = extract_payload(chat_response)
             # extractShoppingDetail(item, brand, price, amount)
             # assistant_input = invoke_aws(service_name, region_name, server_name, operation)
@@ -43,6 +36,29 @@ def call_assistant(tools, userPrompt):
     except Exception as e:
         assistant_message = chat_response.choices[0].message.content
         return assistant_message
+
+def process_service(assistant_message, userPrompt):
+                service_name, operation, region, name = extract_payload(assistant_message)
+                item, brand, amount, price = extract_payload(assistant_message)
+                if not service_name or not region:
+                    content = SERVICES['aws'].content
+                    assistant_message = natural_language_processing(userPrompt, content)
+                    return assistant_message
+                
+                elif service_name and region and operation:
+                    aws = AWS(service_name, region, name, operation)
+                    results = aws.invoke_service()
+                    content = SERVICES['aws'].content
+                    assistant_response = natural_language_processing(results, content)
+                    return assistant_response
+                
+                elif not item or not brand or not price:
+                    content = SERVICES['shopping'].content
+                    assistant_message = natural_language_processing(userPrompt, content)
+                    return assistant_message
+                
+                elif item and brand and price:
+                    pass
 
 def extract_payload(assistant_message):
     try:
@@ -68,10 +84,10 @@ def extractShoppingDetail(item, brand, price, amount=1):
     print(f'Item: {item}, Amount: {amount}, Brand: {brand}, Price: {price}')
 
 
-def natural_language_processing(results):
+def natural_language_processing(results,content):
     response = client.chat.completions.create(
         model=GPT_MODEL,
-        messages=[{"role": "system", "content": "As a Cloud service assistant, you must have the service_name and region to construct any service. These two details are mandatory, and if any of those two details are missing, prompt for both service and region. Additionally, if the output contains string 'Public IP', it means that the resource has been constructed. In such cases, return the output with details like public IP, id, and the state of the resource in a natural language always."},
+        messages=[{"role": "system", "content": content},
                   {"role": "user", "content": json.dumps(results)}]
     )
     return response.choices[0].message.content
@@ -80,7 +96,8 @@ def main():
     tools = [
     SERVICES['shopping'].tools, SERVICES['aws'].tools
         
-]
+]   
+       
     while True:
         userPrompt = input("Enter your prompt ('q' to quit): ")
         if userPrompt.lower() == 'q':
