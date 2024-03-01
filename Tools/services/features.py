@@ -7,5 +7,9 @@ class Service(ABC):
         return self.service
     
     @property
+    def content(self):
+        return self.content
+    
+    @property
     def tools(self):
         return self.tools

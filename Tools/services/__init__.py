@@ -6,3 +6,4 @@ SERVICES = {
     shopping().service: shopping()
 
 }
+

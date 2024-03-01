@@ -8,6 +8,10 @@ class shopping(Service):
         return "shopping"
     
     @property
+    def content(self):
+        return "You are a shopping assistant. Provide me the top 3 shopping results. Only get the title, price and link for each item in natural language."
+    
+    @property
     def tools(self):
         return   {
       "name": "extractShoppingDetail",
