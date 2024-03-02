@@ -21,7 +21,8 @@ class GoogleShopping:
             })
 
             results = search.get_dict()
-            products = results['shopping_results']
+            products = results['shopping_results'][:3]
+            # print(products)
             return products
         
         except Exception as e:
