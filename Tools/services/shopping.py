@@ -5,7 +5,7 @@ class shopping(Service):
 
     @property
     def service(self):
-        return "shopping"
+        return "GoogleShopping"
     
     @property
     def content(self):

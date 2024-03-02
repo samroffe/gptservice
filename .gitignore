@@ -11,3 +11,4 @@ Tools/features/__pycache__/aws_services.cpython-312.pyc
 test.py
 Tools/features/__pycache__/__init__.cpython-312.pyc
 Tools/services/__pycache__/shopping.cpython-312.pyc
+Tools/features/__pycache__/google_shopping.cpython-312.pyc
