@@ -16,6 +16,8 @@ class GoogleShopping:
             search = serpapi.GoogleSearch({
                 "engine": "google_shopping",
                 "q": self.brand + " " + self.item,
+                "hl": "en",
+                "gl": "in",
                 "tbm": "mr:1,price:1,ppr_max:{}".format(self.price),
                 "api_key": os.environ.get('serpapi_key')
             })
