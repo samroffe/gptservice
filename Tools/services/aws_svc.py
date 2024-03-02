@@ -5,7 +5,7 @@ class aws(Service):
 
     @property
     def service(self):
-        return "aws"
+        return "AWS"
     
     @property
     def content(self):

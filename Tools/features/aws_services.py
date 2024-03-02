@@ -9,11 +9,11 @@ AWS_ACCESS_KEY_ID=os.environ.get('aws_access_key')
 
 
 class AWS:
-    def __init__(self, service_name, region_name, server_name="gpt-test", operation=None):
-        self.service_name = service_name
-        self.region_name = region_name
-        self.server_name = server_name
-        self.operation = operation
+    def __init__(self, **args):
+        self.service_name = args.get('service_name')
+        self.operation = args.get('operation')
+        self.region_name = args.get('region')
+        self.server_name = args.get('name')
 
     def invoke_service(self):   
         try:
