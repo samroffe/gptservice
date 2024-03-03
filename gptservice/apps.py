@@ -3,22 +3,27 @@ import os
 import boto3
 import sys
 from openai import OpenAI
-from Tools.services import SERVICES
-from Tools.features.aws_services import AWS
-from Tools.features.google_shopping import GoogleShopping
+from .Tools.services import SERVICES
+from .Tools.features.aws_services import AWS
+from .Tools.features.google_shopping import GoogleShopping
 
 AWS_SECRET_ACCESS_KEY=os.environ.get('aws_secret_key')
 AWS_ACCESS_KEY_ID=os.environ.get('aws_access_key')
 API_KEY=os.environ.get('openai_key')
 GPT_MODEL = "gpt-3.5-turbo-0613"
-
+tools = [
+    SERVICES['AWS'].tools,SERVICES['GoogleShopping'].tools
+        
+]  
 client = OpenAI(api_key=API_KEY)
 
 
-def call_assistant(tools, userPrompt):
+def call_assistant(userPrompt,tools=tools):
     chat_response = client.chat.completions.create(
         model=GPT_MODEL,
-        messages=[{"role": "user", "content": userPrompt}],
+        messages=[{"role": "system", "content": "Hello, I'm an AI assistant developed by OpenAI. Sukamal is the developer of this API service. I would like to discuss its functionality with you. The main features of the service include AWS Services like ec2 and s3 as of now and Shopping Assistant."},
+                  {"role": "user", "content": userPrompt}
+                  ],
         functions=tools,
         function_call='auto'
     )
@@ -55,7 +60,6 @@ def process_service(assistant_message, userPrompt):
                 elif all(required_params):
                     payload_params = SERVICES_CONFIG[service]
                     payload = {param: value for param, value in zip(payload_params, required_params)}
-                    print(payload)
                     service_class = getattr(sys.modules[__name__], service, None)
 
                     # Check if the service class exists
@@ -107,17 +111,13 @@ def natural_language_processing(results,content):
     )
     return response.choices[0].message.content
 
-def main():
-    tools = [
-    SERVICES['AWS'].tools,SERVICES['GoogleShopping'].tools
-        
-]   
+def main(): 
        
     while True:
         userPrompt = input("Enter your prompt ('q' to quit): ")
         if userPrompt.lower() == 'q':
             break
-        api_out = call_assistant(tools, userPrompt)
+        api_out = call_assistant(userPrompt, tools)
         print(api_out)
         # assistant_response = natural_language_processing(api_out)
         # print(assistant_response)
