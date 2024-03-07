@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.0.8' 
+VERSION = '0.0.9' 
 DESCRIPTION = 'GPT Assistant'
 LONG_DESCRIPTION = 'An AI assistant to help with several services.'
 
@@ -21,7 +21,8 @@ setup(
     },
         install_requires=['boto3',
                           'serpapi',
-                          'openai'],
+                          'openai',
+                          'google_search_results'],
         
         keywords=['python', 'chatbot'],
         classifiers= [
