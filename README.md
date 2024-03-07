@@ -9,6 +9,7 @@ Welcome to the GPT Service README! This service utilizes OpenAI's GPT (Generativ
 - **Text Generation**: Generate human-like text based on given prompts.
 - **Deploy Public cloud AWS services**(Supported services: ec2,s3)
 - **Google Shoppin**: Assistant can search for products on Google Shopping.
+- **Google Flights**: Assistant can search for flights on Google Flight.
 
 
 
@@ -51,6 +52,7 @@ pip install gptservice
 export aws_secret_key=YOUR_AWS_SECRET_KEY
 export aws_access_key=YOUR_AWS_ACCESS_KEY
 export openai_key=YOUR_OPENAI_KEY
+export serpapi_key=YOUR_SERPAPI_KEY
 ```
 3. Run the binary
 
