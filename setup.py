@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.0.9' 
+VERSION = '0.1.0' 
 DESCRIPTION = 'GPT Assistant'
 LONG_DESCRIPTION = 'An AI assistant to help with several services.'
 

@@ -17,6 +17,7 @@ class AWS:
 
     def invoke_service(self):   
         try:
+            print("Payloads: %s, %s, %s, %s"% (self.service_name, self.operation, self.region_name, self.server_name))
             if self.service_name and self.region_name is not None:
                 print('Request for External AWS API.......')
                 service_function = {
