@@ -2,17 +2,17 @@ import os
 import json
 import serpapi
 
-serpapi_key = os.environ.get('serpapi_key')
+# serpapi_key = os.environ.get('serpapi_key')
 
 class GoogleShopping:
     def __init__(self, **args):
         self.item = args.get('item')
         self.brand = args.get('brand')
         self.price = args.get('price')
-        self.amount = args.get('amount')
 
     def invoke_service(self):
         try:
+            print("Payloads: %s, %s, %s"% (self.item, self.brand, self.price))
             search = serpapi.GoogleSearch({
                 "engine": "google_shopping",
                 "q": self.brand + " " + self.item,
@@ -24,7 +24,6 @@ class GoogleShopping:
 
             results = search.get_dict()
             products = results['shopping_results'][:3]
-            # print(products)
             return products
         
         except Exception as e:

@@ -23,10 +23,6 @@ class shopping(Service):
             "type": "string",
             "description": "The item name"
           },
-          "amount": {
-            "type": "number",
-            "description": "The amount of the item"
-          },
           "brand": {
             "type": "string",
             "description": "The brand of the item"
