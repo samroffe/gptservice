@@ -9,7 +9,7 @@ class flights(Service):
     
     @property
     def content(self):
-        return "As a Flight Booking Assistant, your task is to extract airport codes (IDs) from user input. Additionally, you should provide the cheapest flight options. For each option, include the price, arrival, departure, and a link, all in natural language."
+        return "As a Flight Booking Assistant, your task is to extract airport codes (IDs) from user input. Additionally, you should provide the cheapest flight options. For each option, include the price, arrival, departure all in natural language."
     
     @property
     def tools(self):
