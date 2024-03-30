@@ -7,13 +7,14 @@ from .Tools.services import SERVICES
 from .Tools.features.aws_services import AWS
 from .Tools.features.google_shopping import GoogleShopping
 from .Tools.features.google_flights import GoogleFlights
+from .Tools.features.bookmyshowscraper import BookMyShow
 
 AWS_SECRET_ACCESS_KEY=os.environ.get('aws_secret_key')
 AWS_ACCESS_KEY_ID=os.environ.get('aws_access_key')
 API_KEY=os.environ.get('openai_key')
 GPT_MODEL = "gpt-3.5-turbo-0613"
 tools = [
-    SERVICES['AWS'].tools,SERVICES['GoogleShopping'].tools,SERVICES['GoogleFlights'].tools
+    SERVICES['AWS'].tools,SERVICES['GoogleShopping'].tools,SERVICES['GoogleFlights'].tools,SERVICES['BookMyShow'].tools
         
 ]  
 client = OpenAI(api_key=API_KEY)
@@ -48,6 +49,7 @@ def process_service(assistant_message, userPrompt):
                     'AWS': ['service_name', 'operation', 'region', 'name'],
                     'GoogleShopping': ['item', 'brand', 'price'],
                     'GoogleFlights': ['arrival_id', 'departure_id', 'outbound_date', 'return_date'],
+                    'BookMyShow': ['movie_language', 'city', 'movie_name']
         # Add more services and their parameters as needed
                 }
                 # Extract service and params from assistant message
@@ -81,12 +83,14 @@ def extract_payload(assistant_message):
         service_mapping = {
             'service_name': 'AWS',
             'item': 'GoogleShopping',
-            'arrival_id': 'GoogleFlights'
+            'arrival_id': 'GoogleFlights',
+            'movie_language': 'BookMyShow'
         }
         payload_mapping = {
             'AWS': ['service_name', 'operation', 'region', 'name'],
             'GoogleShopping': ['item', 'brand', 'price'],
-            'GoogleFlights': ['arrival_id', 'departure_id', 'outbound_date', 'return_date']         
+            'GoogleFlights': ['arrival_id', 'departure_id', 'outbound_date', 'return_date'],
+            'BookMyShow': ['movie_language', 'city', 'movie_name']
         }
 
         service = None
@@ -95,9 +99,10 @@ def extract_payload(assistant_message):
             if key in service_mapping:
                 service = service_mapping[key]
                 payload = payload_mapping[service]
-                params = [assistant_message.get(param).lower() if param == 'service_name' else 'gpt-test' if param == 'name' and assistant_message.get('name') is None else assistant_message.get(param) for param in payload]
+                params = [assistant_message.get(param).lower() if param == 'service_name' else 'gpt-test' if param == 'name' and assistant_message.get('name') is None else 'dummy' if param == 'movie_name' and assistant_message.get('movie_name') is None else assistant_message.get(param)  for param in payload]
                 break      
         if service is not None:
+            print("Service: %s, Params: %s"% (service,params))
             return [service] + params
         else:
             return
